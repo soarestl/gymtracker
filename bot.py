@@ -122,12 +122,56 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logging.exception("Erro ao processar áudio")
         await update.message.reply_text(f"⚠️ Erro: {e}")
 
+async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    try:
+        text = update.message.text.strip().lower()
+        logging.info(f"📩 Mensagem de texto recebida: {text}")
+
+        # Faz o parsing
+        parsed = parser.parse_command(text)
+        logging.info(f"[DEBUG] Resultado do parser: {parsed}")
+
+        action = parsed.get("action")
+        exercise = parsed.get("exercise")
+        exercise_raw = None
+        weight = parsed.get("weight")
+        reps = parsed.get("reps")
+
+        if action in ("start", "end"):
+            exercise_raw = text.replace("início", "").replace("final", "").strip()
+
+        # Grava no banco
+        insert_entry(
+            action=action,
+            exercise=exercise,
+            exercise_raw=exercise_raw,
+            weight=weight,
+            reps=reps,
+            raw_text=text
+        )
+
+        # Resposta amigável
+        if action == "start":
+            await update.message.reply_text(f"🏋️ Início de **{exercise}** registrado!")
+        elif action == "set":
+            await update.message.reply_text(f"📊 {weight} kg — {reps} repetições registradas.")
+        elif action == "end":
+            await update.message.reply_text(f"✅ Final de **{exercise}** registrado!")
+        else:
+            await update.message.reply_text("🤔 Não entendi bem, pode repetir?")
+
+    except Exception as e:
+        logging.exception("Erro ao processar texto")
+        await update.message.reply_text(f"⚠️ Erro: {e}")
+
+
 async def main():
     init_db()
     app = Application.builder().token(TOKEN).build()
 
     # Registra os handlers aqui...
     app.add_handler(MessageHandler(filters.VOICE, handle_voice))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
 
     print("🤖 Bot está rodando offline...")
     await app.initialize()   # inicializa manualmente

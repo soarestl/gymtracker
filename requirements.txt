@@ -1,4 +1,4 @@
-python-telegram-bot==20.7
-openai==1.55.0
-git+https://github.com/openai/whisper.git@v20231117
-torch==2.1.0
+python-telegram-bot==20.8
+openai==1.69.0
+openai-whisper==20250625
+torch==2.9.0

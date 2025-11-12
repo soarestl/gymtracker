@@ -99,14 +99,15 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
             exercise_raw = text.replace("início", "").replace("final", "").strip()
 
         # Grava no banco
-        insert_entry(
-            action=action,
-            exercise=exercise,
-            exercise_raw=exercise_raw,
-            weight=weight,
-            reps=reps,
-            raw_text=text
-        )
+        if action != "unknown":
+            insert_entry(
+                action=action,
+                exercise=exercise,
+                exercise_raw=exercise_raw,
+                weight=weight,
+                reps=reps,
+                raw_text=text
+            )
 
         # Resposta amigável
         if action == "start":
@@ -141,14 +142,15 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
             exercise_raw = text.replace("início", "").replace("final", "").strip()
 
         # Grava no banco
-        insert_entry(
-            action=action,
-            exercise=exercise,
-            exercise_raw=exercise_raw,
-            weight=weight,
-            reps=reps,
-            raw_text=text
-        )
+        if action != "unknown":
+            insert_entry(
+                action=action,
+                exercise=exercise,
+                exercise_raw=exercise_raw,
+                weight=weight,
+                reps=reps,
+                raw_text=text
+            )
 
         # Resposta amigável
         if action == "start":
